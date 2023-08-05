@@ -1,0 +1,15 @@
+import { NextResponse, NextRequest } from "next/server";
+
+export default function middleware(req: NextRequest) {
+    let token = req.cookies.get('token')
+    let url = req.url
+
+    if (token && (url.includes('/login') || url.includes('/register'))) {
+        console.log("Already logged in.");
+        return NextResponse.redirect('http://localhost:3000/')
+    }
+    else if (!token && (url.includes('/student') || url.endsWith('http://localhost:3000/'))) {
+        console.log('not logged in!');
+        return NextResponse.redirect('http://localhost:3000/login')
+    }
+}
