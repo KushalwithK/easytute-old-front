@@ -38,7 +38,7 @@ const Login = () => {
         Cookies.set("token", result.data.token);
         console.log(Cookies);
         setLoading(false);
-        router.push("/");
+        router.push("/dashboard");
       })
       .catch((error) => {
         setLoading(false);

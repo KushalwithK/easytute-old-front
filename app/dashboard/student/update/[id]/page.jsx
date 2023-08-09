@@ -4,15 +4,28 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { API_SINGLETON } from "../../../services/API";
+import { API_SINGLETON } from "../../../../services/API";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { ConfigProvider, Select, Space, theme } from "antd";
 
 const UpdateUser = ({ params }) => {
   const [user, setUser] = useState({});
   const [uploaded, setUploaded] = useState(false);
 
   const router = useRouter();
+
+  const options = [];
+  for (let i = 10; i < 36; i++) {
+    options.push({
+      label: i.toString(36) + i,
+      value: i.toString(36) + i,
+    });
+  }
+
+  const handleChange = (value) => {
+    console.log(`selected ${value}`);
+  };
 
   useEffect(() => {
     API_SINGLETON.get(`/users/${params.id}`)
@@ -122,6 +135,7 @@ const UpdateUser = ({ params }) => {
                   ? setUploaded(false)
                   : setUploaded(true)
               }
+              accept="[image/jpg]"
               type="file"
               name="image"
               id="image"

@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    background-color: #0f0f0f;
+}
+
+.pagesSidebar {
+    display: flex;
+
+    ul {
+        li.ant-menu-item-selected {
+            background-color: #1f1f1f;
+        }
+    }
+}
+
+.dark-login-input {
+    background-color: #161616;
+}
+
+.dark-login-input-200 {
+    background-color: #111111;
+}
+
+.dark-login-input-disabled {
+    background-color: #1b1b1b;
+}
+
