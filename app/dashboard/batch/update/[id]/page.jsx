@@ -9,35 +9,61 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ConfigProvider, Select, Space, Switch, theme } from "antd";
 
-const UpdateUser = ({ params }) => {
-  const [student, setStudent] = useState({});
+const UpdateBatch = ({ params }) => {
+  const [batch, setBatch] = useState({});
+  const [students, setStudents] = useState([]);
 
   const router = useRouter();
 
-  useEffect(() => {
-    API_SINGLETON.get(`/students/${params.id}`)
-      .then((result) => {
-        setStudent(result.data.student);
+  const getStudents = () => {
+    API_SINGLETON.get('/students/').then(result => {
+      let changedStudents = []
+      changedStudents = result.data.students.map((student) => {
+        return {
+          label: student.name,
+          value: student._id
+        }
+      })
+      console.log(changedStudents);
+      setStudents(changedStudents)
+    })
+  }
+
+  const getBatches = async () => {
+    API_SINGLETON.get(`/batches/${params.id}`)
+      .then(async (result) => {
+        setBatch(result.data.batch);
+        let batchStudents = []
+        batchStudents = await result.data.batch.students.map((student) => {
+          return student.name
+        })
+        console.log(batchStudents);
+        setBatch({ ...batch, students: batchStudents })
       })
       .catch((error) => {
         console.log("some error - " + error.message);
       });
+  }
+
+  useEffect(() => {
+    getBatches()
+    getStudents()
   }, []);
 
-  const updateUser = (event) => {
+  const updateBatch = (event) => {
     event.preventDefault();
-    console.log(student);
-    API_SINGLETON.put(`/students/${params.id}`, student)
+    console.log(batch);
+    API_SINGLETON.put(`/batches/${params.id}`, batch)
       .then((result) => {
         console.log(result);
-        toast("Student updated!", {
+        toast("Batch updated!", {
           hideProgressBar: true,
           autoClose: 2000,
           type: "success",
           theme: "dark",
           position: "bottom-right",
         });
-        router.push("/dashboard/student");
+        router.push("/dashboard/batch");
       })
       .catch((error) => {
         console.log(error.message);
@@ -48,16 +74,16 @@ const UpdateUser = ({ params }) => {
     <main className="w-full dark h-screen flex items-center justify-center">
       <ToastContainer />
       <div className="w-full max-w-md p-8 space-y-3 rounded-xl dark-login-input dark:text-gray-100">
-        <h1 className="text-2xl font-bold text-center">Update {student.name}</h1>
-        <form className="space-y-6" onSubmit={updateUser}>
+        <h1 className="text-2xl font-bold text-center">Update {batch.name}</h1>
+        <form className="space-y-6" onSubmit={updateBatch}>
           <div className="space-y-1 text-sm">
             <label htmlFor="name" className="block dark:text-gray-400">
               Name
             </label>
             <input
-              defaultValue={student.name}
+              defaultValue={batch.name}
               onChange={(e) => {
-                setStudent({ ...student, name: e.currentTarget.value })
+                setBatch({ ...batch, name: e.currentTarget.value })
               }}
               type="text"
               name="name"
@@ -67,61 +93,54 @@ const UpdateUser = ({ params }) => {
             />
           </div>
           <div className="space-y-1 text-sm">
-            <label htmlFor="email" className="block dark:text-gray-400">
-              Email
+            <label htmlFor="info" className="block dark:text-gray-400">
+              Info
             </label>
             <input
-              defaultValue={student.email}
+              defaultValue={batch.info}
               onChange={(e) => {
-                setStudent({ ...student, email: e.currentTarget.value })
+                setBatch({ ...batch, info: e.currentTarget.value })
               }}
               type="text"
-              name="email"
-              id="email"
-              placeholder="Ex. john@123.com"
+              name="info"
+              id="info"
+              placeholder="Ex. Morning Batch"
               className="w-full px-4 py-3 rounded-md dark:border-gray-700 dark-login-input-200 dark:text-gray-100 focus:dark:border-violet-400"
             />
           </div>
           <div className="space-y-1 text-sm">
-            <label htmlFor="phone" className="block dark:text-gray-400">
-              Phone
+            <label htmlFor="timing" className="block dark:text-gray-400">
+              Timing
             </label>
             <input
-              defaultValue={student.phone}
+              defaultValue={batch.timing}
               onChange={(e) => {
-                setStudent({ ...student, phone: e.currentTarget.value })
+                setBatch({ ...batch, timing: e.currentTarget.value })
               }}
               type="text"
-              name="phone"
-              id="phone"
-              placeholder="Ex. 1234567890"
+              name="timing"
+              id="timing"
+              placeholder="Ex. 12AM to 12PM"
               className="w-full px-4 py-3 rounded-md dark:border-gray-700 dark-login-input-200 dark:text-gray-100 focus:dark:border-violet-400"
             />
           </div>
           <div className="space-y-1 text-sm">
             <label htmlFor="address" className="block dark:text-gray-400">
-              Address
+              Students
             </label>
-            <input
-              defaultValue={student.address}
-              onChange={(e) => {
-                setStudent({ ...student, address: e.currentTarget.value })
-              }}
-              type="text"
-              name="address"
-              id="address"
-              placeholder="Ex. Mumbai, Maharashtra"
-              className="w-full px-4 py-3 rounded-md dark:border-gray-900 dark-login-input-200 dark:text-gray-400 focus:dark:border-violet-400"
-            />
-          </div>
-          <div className="space-y-1 text-sm">
-            <label htmlFor="address" className="block dark:text-gray-400 mb-1">
-              Enrolled
-            </label>
-            <Switch checked={student.enrolled} checkedChildren="Enrolled" onChange={(e) => {
-              setStudent({ ...student, enrolled: e })
-            }} unCheckedChildren="Inquired" />
-
+            <ConfigProvider theme={{ algorithm: theme.darkAlgorithm }}>
+              <Select
+                mode="multiple"
+                size="large"
+                allowClear
+                style={{ width: '100%' }}
+                placeholder="Please select"
+                defaultValue={batch?.students}
+                defaultOpen
+                onChange={(e) => console.log(e)}
+                options={students}
+              />
+            </ConfigProvider>
           </div>
 
 
@@ -135,4 +154,4 @@ const UpdateUser = ({ params }) => {
   );
 };
 
-export default UpdateUser;
+export default UpdateBatch;
