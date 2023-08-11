@@ -29,13 +29,13 @@ const UpdateBatch = ({ params }) => {
     })
   }
 
-  const getBatches = async () => {
+  const getBatches = () => {
     API_SINGLETON.get(`/batches/${params.id}`)
       .then(async (result) => {
         setBatch(result.data.batch);
         let batchStudents = []
         batchStudents = await result.data.batch.students.map((student) => {
-          return student.name
+          return student._id
         })
         console.log(batchStudents);
         setBatch({ ...batch, students: batchStudents })
@@ -129,21 +129,21 @@ const UpdateBatch = ({ params }) => {
               Students
             </label>
             <ConfigProvider theme={{ algorithm: theme.darkAlgorithm }}>
-              <Select
+              {batch.students && <Select
                 mode="multiple"
                 size="large"
                 allowClear
+                showSearch={false}
                 style={{ width: '100%' }}
                 placeholder="Please select"
-                defaultValue={batch?.students}
-                defaultOpen
+                defaultValue={batch.students}
+                autoFocus
                 onChange={(e) => console.log(e)}
                 options={students}
-              />
+              />}
+
             </ConfigProvider>
           </div>
-
-
           <button className="block w-full p-3 text-center rounded-sm dark:text-gray-200 dark:bg-violet-500">
             Update
           </button>

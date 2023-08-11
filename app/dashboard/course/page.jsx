@@ -104,7 +104,7 @@ export default function Courses() {
       <div className="w-full mx-5 md:px-8">
         <ConfigProvider theme={{ algorithm: theme.darkAlgorithm }}>
           <div className="items-center justify-end md:flex">
-            <Button type="primary" onClick={() => router.push('/dashboard/courses/add')}>Add Course</Button>
+            <Button type="primary" onClick={() => router.push('/dashboard/course/add')}>Add Course</Button>
           </div>
           <div className="mt-5 relative h-max overflow-auto">
             <Table columns={columns} dataSource={data} />
