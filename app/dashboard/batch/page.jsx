@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 export default function Batches() {
   const [data, setData] = useState([]);
 
-  const router = useRouter()
+  const router = useRouter();
 
   const columns = [
     {
@@ -36,8 +36,8 @@ export default function Batches() {
       dataIndex: "students",
       key: "students",
       render: (_, { students }) => {
-        <p>{students.length}</p>
-      }
+        <p>{students.length}</p>;
+      },
     },
 
     {
@@ -78,7 +78,7 @@ export default function Batches() {
     API_SINGLETON.delete(`/batches/${id}`)
       .then((result) => {
         console.log(result);
-        getStudents();
+        getBatches();
         toast("Batch was deleted!", {
           hideProgressBar: true,
           autoClose: 2000,
@@ -104,7 +104,12 @@ export default function Batches() {
       <div className="w-full mx-5 md:px-8">
         <ConfigProvider theme={{ algorithm: theme.darkAlgorithm }}>
           <div className="items-center justify-end md:flex">
-            <Button type="primary" onClick={() => router.push('/dashboard/batch/add')}>Add Batch</Button>
+            <Button
+              type="primary"
+              onClick={() => router.push("/dashboard/batch/add")}
+            >
+              Add Batch
+            </Button>
           </div>
           <div className="mt-5 relative h-max overflow-auto">
             <Table columns={columns} dataSource={data} />

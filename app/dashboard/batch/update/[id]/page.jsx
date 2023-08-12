@@ -16,38 +16,39 @@ const UpdateBatch = ({ params }) => {
   const router = useRouter();
 
   const getStudents = () => {
-    API_SINGLETON.get('/students/').then(result => {
-      let changedStudents = []
+    API_SINGLETON.get("/students/").then((result) => {
+      let changedStudents = [];
       changedStudents = result.data.students.map((student) => {
         return {
           label: student.name,
-          value: student._id
-        }
-      })
+          value: student._id,
+        };
+      });
       console.log(changedStudents);
-      setStudents(changedStudents)
-    })
-  }
+      setStudents(changedStudents);
+    });
+  };
 
   const getBatches = () => {
     API_SINGLETON.get(`/batches/${params.id}`)
       .then(async (result) => {
         setBatch(result.data.batch);
-        let batchStudents = []
+        let batchStudents = [];
         batchStudents = await result.data.batch.students.map((student) => {
-          return student._id
-        })
+          return student._id;
+        });
         console.log(batchStudents);
-        setBatch({ ...batch, students: batchStudents })
+        // setBatch({ ...batch, students: batchStudents });
+        setBatch({ ...result.data.batch, students: batchStudents });
       })
       .catch((error) => {
         console.log("some error - " + error.message);
       });
-  }
+  };
 
   useEffect(() => {
-    getBatches()
-    getStudents()
+    getBatches();
+    getStudents();
   }, []);
 
   const updateBatch = (event) => {
@@ -83,7 +84,7 @@ const UpdateBatch = ({ params }) => {
             <input
               defaultValue={batch.name}
               onChange={(e) => {
-                setBatch({ ...batch, name: e.currentTarget.value })
+                setBatch({ ...batch, name: e.currentTarget.value });
               }}
               type="text"
               name="name"
@@ -96,12 +97,11 @@ const UpdateBatch = ({ params }) => {
             <label htmlFor="info" className="block dark:text-gray-400">
               Info
             </label>
-            <input
+            <textarea
               defaultValue={batch.info}
               onChange={(e) => {
-                setBatch({ ...batch, info: e.currentTarget.value })
+                setBatch({ ...batch, info: e.currentTarget.value });
               }}
-              type="text"
               name="info"
               id="info"
               placeholder="Ex. Morning Batch"
@@ -115,7 +115,7 @@ const UpdateBatch = ({ params }) => {
             <input
               defaultValue={batch.timing}
               onChange={(e) => {
-                setBatch({ ...batch, timing: e.currentTarget.value })
+                setBatch({ ...batch, timing: e.currentTarget.value });
               }}
               type="text"
               name="timing"
@@ -129,26 +129,26 @@ const UpdateBatch = ({ params }) => {
               Students
             </label>
             <ConfigProvider theme={{ algorithm: theme.darkAlgorithm }}>
-              {batch.students && <Select
-                mode="multiple"
-                size="large"
-                allowClear
-                showSearch={false}
-                style={{ width: '100%' }}
-                placeholder="Please select"
-                defaultValue={batch.students}
-                autoFocus
-                onChange={(e) => console.log(e)}
-                options={students}
-              />}
-
+              {batch.students && (
+                <Select
+                  mode="multiple"
+                  size="large"
+                  allowClear
+                  showSearch={false}
+                  style={{ width: "100%" }}
+                  placeholder="Please select"
+                  defaultValue={batch.students}
+                  autoFocus
+                  onChange={(e) => setBatch({ ...batch, students: e })}
+                  options={students}
+                />
+              )}
             </ConfigProvider>
           </div>
           <button className="block w-full p-3 text-center rounded-sm dark:text-gray-200 dark:bg-violet-500">
             Update
           </button>
         </form>
-
       </div>
     </main>
   );
