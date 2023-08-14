@@ -4,7 +4,15 @@ import { useEffect, useState } from "react";
 import { API_SINGLETON } from "../../services/API";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Button, Space, Table, Tag, ConfigProvider, theme } from "antd";
+import {
+  Button,
+  Space,
+  Table,
+  Tag,
+  ConfigProvider,
+  theme,
+  Popconfirm,
+} from "antd";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -30,14 +38,13 @@ export default function Batches() {
       title: "Timing",
       dataIndex: "timing",
       key: "timing",
+      render: (timing) => <p>{timing?.time ?? "Some issue"}</p>,
     },
     {
       title: "Students",
       dataIndex: "students",
       key: "students",
-      render: (_, { students }) => {
-        <p>{students.length}</p>;
-      },
+      render: (students) => <p>{students.length}</p>,
     },
 
     {
@@ -46,14 +53,15 @@ export default function Batches() {
       render: (_, record) => (
         <Space size="middle">
           <Link href={`batch/update/${record._id}`}>Update</Link>
-          <Button
-            danger
-            onClick={() => {
-              deleteBatch(record._id);
-            }}
+          <Popconfirm
+            title={`Delete ${record.name}`}
+            description="Are you sure to delete this batch?"
+            okText="Yes"
+            cancelText="No"
+            onConfirm={() => deleteBatch(record._id)}
           >
-            Delete
-          </Button>
+            <Button danger>Delete</Button>
+          </Popconfirm>
         </Space>
       ),
     },

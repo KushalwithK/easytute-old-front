@@ -12,8 +12,29 @@ import { ConfigProvider, Select, Space, Switch, theme } from "antd";
 const UpdateBatch = ({ params }) => {
   const [batch, setBatch] = useState({});
   const [students, setStudents] = useState([]);
+  const [batchTimings, setTimings] = useState([]);
 
   const router = useRouter();
+
+  const getBatchTimings = () => {
+    API_SINGLETON.get("/batchTimings")
+      .then((result) => {
+        const timings = result.data.timings;
+        let changedTimings = [
+          { value: "SELECT", label: "Select Timing", disabled: true },
+        ];
+        changedTimings = timings.map((timing) => {
+          return {
+            value: timing._id,
+            label: timing.time,
+          };
+        });
+        setTimings(changedTimings);
+      })
+      .catch((error) => {
+        toast(error.response.data.message);
+      });
+  };
 
   const getStudents = () => {
     API_SINGLETON.get("/students/").then((result) => {
@@ -49,6 +70,7 @@ const UpdateBatch = ({ params }) => {
   useEffect(() => {
     getBatches();
     getStudents();
+    getBatchTimings();
   }, []);
 
   const updateBatch = (event) => {
@@ -108,27 +130,29 @@ const UpdateBatch = ({ params }) => {
               className="w-full px-4 py-3 rounded-md dark:border-gray-700 dark-login-input-200 dark:text-gray-100 focus:dark:border-violet-400"
             />
           </div>
-          <div className="space-y-1 text-sm">
-            <label htmlFor="timing" className="block dark:text-gray-400">
-              Timing
-            </label>
-            <input
-              defaultValue={batch.timing}
-              onChange={(e) => {
-                setBatch({ ...batch, timing: e.currentTarget.value });
-              }}
-              type="text"
-              name="timing"
-              id="timing"
-              placeholder="Ex. 12AM to 12PM"
-              className="w-full px-4 py-3 rounded-md dark:border-gray-700 dark-login-input-200 dark:text-gray-100 focus:dark:border-violet-400"
-            />
-          </div>
-          <div className="space-y-1 text-sm">
-            <label htmlFor="address" className="block dark:text-gray-400">
-              Students
-            </label>
-            <ConfigProvider theme={{ algorithm: theme.darkAlgorithm }}>
+          <ConfigProvider theme={{ algorithm: theme.darkAlgorithm }}>
+            <div className="space-y-1 text-sm">
+              <label htmlFor="timing" className="block dark:text-gray-400">
+                Timing
+              </label>
+              {batch.timing && (
+                <Select
+                  placeholder={"Select Timing"}
+                  size="large"
+                  style={{ width: "100%" }}
+                  onChange={(e) => {
+                    console.log(e);
+                    setBatch({ ...batch, timing_id: e });
+                  }}
+                  defaultValue={batch.timing._id}
+                  options={batchTimings}
+                />
+              )}
+            </div>
+            <div className="space-y-1 text-sm">
+              <label htmlFor="address" className="block dark:text-gray-400">
+                Students
+              </label>
               {batch.students && (
                 <Select
                   mode="multiple"
@@ -143,8 +167,8 @@ const UpdateBatch = ({ params }) => {
                   options={students}
                 />
               )}
-            </ConfigProvider>
-          </div>
+            </div>
+          </ConfigProvider>
           <button className="block w-full p-3 text-center rounded-sm dark:text-gray-200 dark:bg-violet-500">
             Update
           </button>

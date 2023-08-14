@@ -5,7 +5,17 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { API_SINGLETON } from "../../../services/API";
 import { useRouter } from "next/navigation";
-import { ConfigProvider, DatePicker, Select, Switch, theme } from "antd";
+import {
+  Button,
+  ConfigProvider,
+  DatePicker,
+  Select,
+  Switch,
+  Upload,
+  message,
+  theme,
+} from "antd";
+import { UploadOutlined } from "@ant-design/icons";
 
 const AddStudent = () => {
   const [student, setStudent] = useState({});
@@ -31,8 +41,8 @@ const AddStudent = () => {
 
   const Add = (event) => {
     event.preventDefault();
-    console.log(student);
-    API_SINGLETON.post(`/students/`, student)
+    const formData = new FormData(event.target);
+    API_SINGLETON.post(`/students/`, formData)
       .then((result) => {
         console.log(result);
         toast("Student Added!", {
@@ -182,6 +192,22 @@ const AddStudent = () => {
                     dob: e.$d.toISOString().split("T")[0],
                   })
                 }
+              />
+            </div>
+            <div className="space-y-1 text-sm">
+              <label htmlFor="image" className="block dark:text-gray-400">
+                Image
+              </label>
+              <input
+                type="file"
+                name="image"
+                id="image"
+                onChange={(e) => {
+                  console.log(e.currentTarget.files);
+                  setStudent({ ...student, image: e.currentTarget.files });
+                }}
+                placeholder="Image accepted only!"
+                className="w-full px-4 py-3 rounded-md dark:border-gray-700 dark-login-input-200 dark:text-gray-100 focus:dark:border-violet-400"
               />
             </div>
             <div className="space-y-1 text-sm">

@@ -4,7 +4,15 @@ import { useEffect, useState } from "react";
 import { API_SINGLETON } from "../../services/API";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Button, Space, Table, Tag, ConfigProvider, theme } from "antd";
+import {
+  Button,
+  Space,
+  Table,
+  Tag,
+  ConfigProvider,
+  theme,
+  Popconfirm,
+} from "antd";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -12,7 +20,7 @@ import { useRouter } from "next/navigation";
 export default function Home() {
   const [data, setData] = useState([]);
 
-  const router = useRouter()
+  const router = useRouter();
 
   const columns = [
     {
@@ -52,14 +60,15 @@ export default function Home() {
       render: (_, record) => (
         <Space size="middle">
           <Link href={`student/update/${record._id}`}>Update</Link>
-          <Button
-            danger
-            onClick={() => {
-              deleteStudent(record._id);
-            }}
+          <Popconfirm
+            title={`Delete ${record.name}`}
+            description="Are you sure to delete this student?"
+            okText="Yes"
+            cancelText="No"
+            onConfirm={() => deleteStudent(record._id)}
           >
-            Delete
-          </Button>
+            <Button danger>Delete</Button>
+          </Popconfirm>
         </Space>
       ),
     },
@@ -110,7 +119,12 @@ export default function Home() {
       <div className="w-full mx-5 md:px-8">
         <ConfigProvider theme={{ algorithm: theme.darkAlgorithm }}>
           <div className="items-center justify-end md:flex">
-            <Button type="primary" onClick={() => router.push('/dashboard/student/add')}>Add Student</Button>
+            <Button
+              type="primary"
+              onClick={() => router.push("/dashboard/student/add")}
+            >
+              Add Student
+            </Button>
           </div>
           <div className="mt-5 relative h-max overflow-auto">
             <Table columns={columns} dataSource={data} />

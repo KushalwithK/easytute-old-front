@@ -11,8 +11,29 @@ import { ConfigProvider, Select, Space, Switch, theme } from "antd";
 
 const AddBatch = () => {
   const [batch, setBatch] = useState({});
+  const [batchTimings, setTimings] = useState([]);
 
   const router = useRouter();
+
+  const getBatchTimings = () => {
+    API_SINGLETON.get("/batchTimings")
+      .then((result) => {
+        const timings = result.data.timings;
+        let changedTimings = [
+          { value: "SELECT", label: "Select Timing", disabled: true },
+        ];
+        changedTimings = timings.map((timing) => {
+          return {
+            value: timing._id,
+            label: timing.time,
+          };
+        });
+        setTimings(changedTimings);
+      })
+      .catch((error) => {
+        toast(error.response.data.message);
+      });
+  };
 
   const addBatch = (event) => {
     event.preventDefault();
@@ -33,6 +54,10 @@ const AddBatch = () => {
         console.log(error.message);
       });
   };
+
+  useEffect(() => {
+    getBatchTimings();
+  }, []);
 
   return (
     <main className="w-full dark h-screen flex items-center justify-center">
@@ -59,7 +84,7 @@ const AddBatch = () => {
             <label htmlFor="info" className="block dark:text-gray-400">
               Info
             </label>
-            <teztarea
+            <textarea
               onChange={(e) => {
                 setBatch({ ...batch, info: e.currentTarget.value });
               }}
@@ -69,21 +94,24 @@ const AddBatch = () => {
               className="w-full px-4 py-3 rounded-md dark:border-gray-700 dark-login-input-200 dark:text-gray-100 focus:dark:border-violet-400"
             />
           </div>
-          <div className="space-y-1 text-sm">
-            <label htmlFor="timing" className="block dark:text-gray-400">
-              Timing
-            </label>
-            <input
-              onChange={(e) => {
-                setBatch({ ...batch, timing: e.currentTarget.value });
-              }}
-              type="text"
-              name="timing"
-              id="timing"
-              placeholder="Ex. 10AM to 12PM"
-              className="w-full px-4 py-3 rounded-md dark:border-gray-700 dark-login-input-200 dark:text-gray-100 focus:dark:border-violet-400"
-            />
-          </div>
+          <ConfigProvider theme={{ algorithm: theme.darkAlgorithm }}>
+            <div className="space-y-1 text-sm">
+              <label htmlFor="timing" className="block dark:text-gray-400">
+                Timing
+              </label>
+              <Select
+                aria-required
+                placeholder={"Select Timing"}
+                size="large"
+                style={{ width: "100%" }}
+                onChange={(e) => {
+                  console.log(e);
+                  setBatch({ ...batch, timing_id: e });
+                }}
+                options={batchTimings}
+              />
+            </div>
+          </ConfigProvider>
           <button className="block w-full p-3 text-center rounded-sm dark:text-gray-200 dark:bg-violet-500">
             Add Batch
           </button>
