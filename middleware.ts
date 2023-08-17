@@ -13,7 +13,7 @@ export default function middleware(req: NextRequest) {
         console.log("Already logged in.");
         return NextResponse.redirect('http://localhost:3000/')
     }
-    else if (!token && (url.includes('/student') || url.endsWith('http://localhost:3000/'))) {
+    else if (!token && url.includes('/dashboard')) {
         console.log('not logged in!');
         return NextResponse.redirect('http://localhost:3000/login')
     }

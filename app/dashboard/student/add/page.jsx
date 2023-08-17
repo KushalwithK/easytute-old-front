@@ -5,18 +5,12 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { API_SINGLETON } from "../../../services/API";
 import { useRouter } from "next/navigation";
-import {
-  ConfigProvider,
-  DatePicker,
-  Select,
-  Switch,
-  theme,
-} from "antd";
+import { ConfigProvider, DatePicker, Select, Switch, theme } from "antd";
 
 const AddStudent = () => {
   const [student, setStudent] = useState({
     course_ids: [],
-    enrolled: false
+    enrolled: false,
   });
   const [courses, setCourses] = useState([]);
 
@@ -41,10 +35,10 @@ const AddStudent = () => {
   const Add = (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
-    formData.append('course_ids', student.course_ids)
-    formData.append('stream', student.stream)
-    formData.append('dob', student.dob)
-    formData.append('enrolled', student.enrolled)
+    formData.append("course_ids", student.course_ids);
+    formData.append("stream", student.stream);
+    formData.append("dob", student.dob);
+    formData.append("enrolled", student.enrolled);
 
     API_SINGLETON.post(`/students/`, formData)
       .then((result) => {
@@ -192,10 +186,6 @@ const AddStudent = () => {
                 type="file"
                 name="image"
                 id="image"
-                onChange={(e) => {
-                  console.log(e.currentTarget.files);
-                  setStudent({ ...student, image: e.currentTarget.files });
-                }}
                 placeholder="Image accepted only!"
                 className="w-full px-4 py-3 rounded-md dark:border-gray-700 dark-login-input-200 dark:text-gray-100 focus:dark:border-violet-400"
               />
