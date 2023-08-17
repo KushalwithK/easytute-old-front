@@ -3,6 +3,7 @@
 import "../globals.scss";
 import { Inter } from "next/font/google";
 import Sidebar from "../components/Sidebar";
+import { ConfigProvider, theme } from "antd";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,10 +16,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <main className="h-screen pagesSidebar">
-          <Sidebar />
-          {children}
-        </main>
+        <ConfigProvider theme={{ algorithm: theme.darkAlgorithm }}>
+          <main className="h-screen pagesSidebar">
+            <Sidebar />
+            {children}
+          </main>
+        </ConfigProvider>
       </body>
     </html>
   );

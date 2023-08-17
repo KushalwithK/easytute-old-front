@@ -6,19 +6,18 @@ import "react-toastify/dist/ReactToastify.css";
 import { API_SINGLETON } from "../../../services/API";
 import { useRouter } from "next/navigation";
 import {
-  Button,
   ConfigProvider,
   DatePicker,
   Select,
   Switch,
-  Upload,
-  message,
   theme,
 } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
 
 const AddStudent = () => {
-  const [student, setStudent] = useState({});
+  const [student, setStudent] = useState({
+    course_ids: [],
+    enrolled: false
+  });
   const [courses, setCourses] = useState([]);
 
   const router = useRouter();
@@ -42,6 +41,11 @@ const AddStudent = () => {
   const Add = (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
+    formData.append('course_ids', student.course_ids)
+    formData.append('stream', student.stream)
+    formData.append('dob', student.dob)
+    formData.append('enrolled', student.enrolled)
+
     API_SINGLETON.post(`/students/`, formData)
       .then((result) => {
         console.log(result);
@@ -55,13 +59,14 @@ const AddStudent = () => {
         router.push("/dashboard/student");
       })
       .catch((error) => {
-        toast(error.response.data.message, {
-          hideProgressBar: true,
-          autoClose: 2000,
-          type: "error",
-          theme: "dark",
-          position: "bottom-right",
-        });
+        console.log(error);
+        // toast(error.response.data.message, {
+        //   hideProgressBar: true,
+        //   autoClose: 2000,
+        //   type: "error",
+        //   theme: "dark",
+        //   position: "bottom-right",
+        // });
       });
   };
 
@@ -76,9 +81,6 @@ const AddStudent = () => {
               Name
             </label>
             <input
-              onChange={(e) => {
-                setStudent({ ...student, name: e.currentTarget.value });
-              }}
               type="text"
               name="name"
               id="name"
@@ -91,12 +93,9 @@ const AddStudent = () => {
               Description
             </label>
             <textarea
-              onChange={(e) => {
-                setStudent({ ...student, desc: e.currentTarget.value });
-              }}
-              name="name"
-              id="name"
-              placeholder="Ex. John Smith"
+              name="desc"
+              id="desc"
+              placeholder="Ex. John Smith is a good man"
               className="w-full px-4 py-3 rounded-md dark:border-gray-700 dark-login-input-200 dark:text-gray-100 focus:dark:border-violet-400"
             />
           </div>
@@ -105,9 +104,6 @@ const AddStudent = () => {
               Email
             </label>
             <input
-              onChange={(e) => {
-                setStudent({ ...student, email: e.currentTarget.value });
-              }}
               type="text"
               name="email"
               id="email"
@@ -120,9 +116,6 @@ const AddStudent = () => {
               Phone
             </label>
             <input
-              onChange={(e) => {
-                setStudent({ ...student, phone: e.currentTarget.value });
-              }}
               type="text"
               name="phone"
               id="phone"
@@ -135,9 +128,6 @@ const AddStudent = () => {
               Address
             </label>
             <input
-              onChange={(e) => {
-                setStudent({ ...student, address: e.currentTarget.value });
-              }}
               type="text"
               name="address"
               id="address"
