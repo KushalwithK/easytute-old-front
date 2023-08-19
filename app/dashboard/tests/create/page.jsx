@@ -11,12 +11,23 @@ import {
 import TextArea from "antd/es/input/TextArea";
 import { BiPlusCircle, BiMinusCircle } from "react-icons/bi";
 import React, { useState, useRef } from "react";
-import { randomUUID } from "crypto";
+import { API_SINGLETON } from "../../../services/API";
 
 const CreateTest = () => {
-  const [content, setContent] = useState("");
-  const editorRef = useRef(null);
+  const [content, setContent] = useState({});
   const [questions, setQuestions] = useState([]);
+
+  const submitTest = (event) => {
+    event.preventDefault();
+    const data = { ...content, questions };
+    API_SINGLETON.post("/tests", data)
+      .then((result) => {
+        console.log(result.data);
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  };
 
   return (
     <>
@@ -25,12 +36,15 @@ const CreateTest = () => {
           <h1 className="text-2xl font-bold text-center text-gray-100">
             Create a Test
           </h1>
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={submitTest}>
             <div className="space-y-1 text-sm">
               <label htmlFor="topic" className="block dark:text-gray-400">
                 Topic
               </label>
               <input
+                onChange={(event) =>
+                  setContent({ ...content, topic: event.currentTarget.value })
+                }
                 type="text"
                 name="topic"
                 id="topic"
@@ -43,6 +57,12 @@ const CreateTest = () => {
                 Passing marks
               </label>
               <input
+                onChange={(event) =>
+                  setContent({
+                    ...content,
+                    passingMarks: event.currentTarget.value,
+                  })
+                }
                 type="text"
                 name="passingMarks"
                 id="passing"
@@ -55,6 +75,12 @@ const CreateTest = () => {
                 Total marks
               </label>
               <input
+                onChange={(event) =>
+                  setContent({
+                    ...content,
+                    totalMarks: event.currentTarget.value,
+                  })
+                }
                 type="text"
                 name="totalMarks"
                 id="total"
@@ -69,19 +95,16 @@ const CreateTest = () => {
               <DatePicker.RangePicker
                 size="large"
                 showTime={{
-                  format: "HH:mm:ss",
+                  format: "HH:mm",
                   use12Hours: true,
                 }}
-                format="YYYY-MM-DD HH:mm:ss"
+                format="YYYY-MM-DD HH:mm"
                 onChange={(value, dateString) => {
-                  console.log(
-                    "Selected Time: ",
-                    value[0].toDate().toISOString()
-                  );
-                  console.log("Formatted Selected Time: ", dateString);
-                }}
-                onOk={(value) => {
-                  console.log("onOk: ", value);
+                  setContent({
+                    ...content,
+                    startTime: value[0].toDate().toISOString(),
+                    endTime: value[1].toDate().toISOString(),
+                  });
                 }}
               />
             </div>
@@ -100,7 +123,7 @@ const CreateTest = () => {
                       type="text"
                       name="question"
                       id="question"
-                      defaultValue={question.question}
+                      value={question.question}
                       onChange={(e) => {
                         const changedQuestion = questions.map((ques) => {
                           if (ques == question)
@@ -110,21 +133,29 @@ const CreateTest = () => {
                             };
                           else return ques;
                         });
-                        console.log(changedQuestion);
                         setQuestions(changedQuestion);
                       }}
                       placeholder="Ex. How to edit this?"
-                      className="w-full mb-2 px-3 py-2 rounded-md dark:border-gray-700 dark-login-input-200 dark:text-gray-100 focus:dark:border-violet-400"
+                      className="w-full px-3 py-2 rounded-md dark:border-gray-700 dark-login-input-200 dark:text-gray-100 focus:dark:border-violet-400"
+                    />
+                    <BiMinusCircle
+                      onClick={() => {
+                        const changedQuestion = questions.filter(
+                          (ques) => ques !== question
+                        );
+                        setQuestions(changedQuestion);
+                      }}
+                      size={25}
                     />
                   </div>
                   {question.answers.map((answer, idx) => {
                     return (
                       <div
-                        className="flex justify-between items-center gap-2 mb-2"
+                        className="flex justify-between items-center gap-2 mt-2 mb-2"
                         key={idx}
                       >
                         <Checkbox
-                          defaultChecked={answer.correct}
+                          checked={answer.correct}
                           onClick={(event) => {
                             const changedQuestion = questions.map((ques) => {
                               if (ques == question)
@@ -141,7 +172,6 @@ const CreateTest = () => {
                                 };
                               else return ques;
                             });
-                            console.log(changedQuestion);
                             setQuestions(changedQuestion);
                           }}
                         />
@@ -149,7 +179,7 @@ const CreateTest = () => {
                           name="answer"
                           id="answer"
                           rows={1}
-                          defaultValue={answer.answer}
+                          value={answer.answer}
                           onChange={(e) => {
                             const changedQuestion = questions.map((ques) => {
                               if (ques == question)
@@ -166,7 +196,6 @@ const CreateTest = () => {
                                 };
                               else return ques;
                             });
-                            console.log(changedQuestion);
                             setQuestions(changedQuestion);
                           }}
                           placeholder="Ex. How to edit this?"
@@ -177,7 +206,6 @@ const CreateTest = () => {
                             size={30}
                             color="#c2c2c2"
                             onClick={() => {
-                              console.log(questions);
                               const changedQuestion = questions.map((ques) => {
                                 if (ques == question)
                                   return {
@@ -197,13 +225,13 @@ const CreateTest = () => {
                             size={30}
                             color="#c2c2c2"
                             onClick={() => {
-                              console.log(questions);
+                              console.log(answer);
                               const changedQuestion = questions.map((ques) => {
                                 if (ques == question)
                                   return {
                                     ...question,
                                     answers: question.answers.filter(
-                                      (ans) => ans.answer != answer.answer
+                                      (ans) => ans != answer
                                     ),
                                   };
                                 else return ques;
@@ -217,21 +245,28 @@ const CreateTest = () => {
                   })}
                 </div>
               ))}
+              <Button
+                onClick={() =>
+                  setQuestions([
+                    ...questions,
+                    {
+                      question: "",
+                      answers: [{ answer: "", correct: false }],
+                    },
+                  ])
+                }
+              >
+                {questions.length <= 0
+                  ? "Add question"
+                  : "Add another question"}
+              </Button>
             </div>
-            <Button
-              type="primary"
-              onClick={() =>
-                setQuestions([
-                  ...questions,
-                  {
-                    question: "",
-                    answers: [{ answer: "", correct: false }],
-                  },
-                ])
-              }
+            <button
+              className="block w-full p-3 text-center rounded-sm dark:text-gray-200 dark:bg-violet-500"
+              type="submit"
             >
-              {questions.length <= 0 ? "Add question" : "Add another question"}
-            </Button>
+              Create Test
+            </button>
           </form>
         </div>
       </div>

@@ -6,7 +6,7 @@ import {
   UserOutlined,
   HomeOutlined,
   BookOutlined,
-  UserAddOutlined,
+  UpCircleOutlined,
   UserSwitchOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
@@ -24,7 +24,7 @@ function getItem(label, key, icon, children, theme) {
 
 const Sidebar = () => {
   const router = useRouter();
-  const pathName = usePathname()
+  const pathName = usePathname();
 
   const [current, setCurrent] = useState(pathName);
 
@@ -36,7 +36,7 @@ const Sidebar = () => {
   const onClick = (e) => {
     if (e.key && e.key !== "USER::LOGOUT") {
       setCurrent(e.key);
-      router.push(e.key)
+      router.push(e.key);
     }
     if (e.key === "USER::LOGOUT") {
       Cookies.remove("token");
@@ -50,16 +50,8 @@ const Sidebar = () => {
     getItem("Courses", "/dashboard/course", <BookOutlined />),
     getItem("Batches", "/dashboard/batch", <FieldTimeOutlined />),
     getItem("Actions"),
-    getItem(
-      "+ / - Student to Batch",
-      "/dashboard/students/batches/add",
-      <UserAddOutlined />
-    ),
-    getItem(
-      "Get Students of Batch",
-      "/dashboard/batches/students",
-      <UserSwitchOutlined />
-    ),
+    getItem("Tests", "/dashboard/tests", <BookOutlined />),
+    getItem("Assign Tests", "/dashboard/tests/assign", <UpCircleOutlined />),
     getItem("Profile"),
     getItem("Logout", "USER::LOGOUT", <LogoutOutlined />),
   ];
