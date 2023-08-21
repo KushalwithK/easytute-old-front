@@ -1,35 +1,52 @@
 "use client";
 
-import { Checkbox, Divider, Select } from "antd";
+import { Button, Checkbox, Divider, Select } from "antd";
 import { useEffect, useState } from "react";
 import { API_SINGLETON } from "../../../services/API";
 const Assign = () => {
   const [iTests, setTests] = useState(null);
   const [selectedTest, setSelectedTest] = useState(null);
   const [selectedBatch, setSelectedBatch] = useState(null);
+  const [alreadyAssigned, setAlreadyAssigned] = useState([]);
   const [batches, setBatches] = useState(null);
-  const [studentIds, setStudentsIds] = useState(null);
-
-  const plainOptions = ["Apple", "Pear", "Orange"];
+  const [students, setStudents] = useState(null);
 
   const [checkedList, setCheckedList] = useState([]);
-  const checkAll = plainOptions.length === checkedList.length;
+  const checkAll = students?.length === checkedList.length;
   const indeterminate =
-    checkedList.length > 0 && checkedList.length < plainOptions.length;
+    checkedList.length > 0 && checkedList.length < students?.length;
 
   const getStudentsIds = () => {
     if (selectedBatch)
       API_SINGLETON.get(`/batches/${selectedBatch}/students/ids`)
         .then((result) => {
           console.log(result.data);
-          setStudentsIds(result.data.student_ids);
+          const student_ids = result.data.student_ids;
+          const student_names = student_ids.map((student) => {
+            return {
+              label: student.name,
+              value: student._id,
+            };
+          });
+
+          setStudents(student_names);
         })
         .catch((error) => {
           console.log(error.message);
         });
   };
 
+  const getCurrentChecked = () => {
+    API_SINGLETON.get(`/tests/${selectedTest}`).then((result) => {
+      setCheckedList(result.data.test.attendedStudents);
+    });
+    // console.log(currentTest?.map((test) => test._id));
+  };
+
   useEffect(() => getStudentsIds(), [selectedBatch]);
+  useEffect(() => {
+    if (selectedTest) getCurrentChecked();
+  }, [selectedTest]);
 
   const getTests = () => {
     API_SINGLETON.get("/tests/")
@@ -69,10 +86,29 @@ const Assign = () => {
   }, []);
 
   const onChange = (list) => {
+    console.log(list);
     setCheckedList(list);
   };
   const onCheckAllChange = (e) => {
-    setCheckedList(e.target.checked ? plainOptions : []);
+    setCheckedList(
+      e.target.checked ? students.map((student) => student.value) : []
+    );
+  };
+
+  const assignTest = () => {
+    if (checkedList != []) {
+      console.log(selectedTest);
+      API_SINGLETON.post(`/tests/${selectedTest}/attend`, {
+        student_ids: checkedList,
+      })
+        .then((result) => {
+          console.log(result.data);
+          setCheckedList([]);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   };
 
   return (
@@ -90,7 +126,7 @@ const Assign = () => {
               onClear={() => {
                 setSelectedTest(null);
                 setSelectedBatch(null);
-                setStudentsIds(null);
+                setStudents(null);
               }}
               size="large"
               style={{ width: 500 }}
@@ -115,29 +151,42 @@ const Assign = () => {
               onChange={(value) => setSelectedBatch(value)}
               onClear={() => {
                 setSelectedBatch(null);
-                setStudentsIds(null);
+                setStudents(null);
               }}
               options={batches}
             />
           </div>
         )}
-        {studentIds && (
+        {students && (
           <div>
-            <h1 className="text-gray-100">
-              <Checkbox
-                indeterminate={indeterminate}
-                onChange={onCheckAllChange}
-                checked={checkAll}
-              >
-                Check all
-              </Checkbox>
-              <Divider />
-              <Checkbox.Group
-                options={plainOptions}
-                value={checkedList}
-                onChange={onChange}
-              />
-            </h1>
+            <Checkbox
+              indeterminate={indeterminate}
+              onChange={onCheckAllChange}
+              checked={checkAll}
+            >
+              Check all
+            </Checkbox>
+            <Divider
+              style={{
+                margin: "12px 0",
+              }}
+            />
+            <Checkbox.Group
+              options={students}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: ".5rem",
+              }}
+              value={checkedList}
+              onChange={onChange}
+            />
+            <Divider
+              style={{
+                margin: "12px 0",
+              }}
+            />
+            <Button onClick={assignTest}>Assign Test</Button>
           </div>
         )}
       </div>
