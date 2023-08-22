@@ -12,6 +12,7 @@ import TextArea from "antd/es/input/TextArea";
 import { BiPlusCircle, BiMinusCircle } from "react-icons/bi";
 import React, { useState, useRef } from "react";
 import { API_SINGLETON } from "../../../services/API";
+import { ToastContainer } from "react-toastify";
 
 const CreateTest = () => {
   const [content, setContent] = useState({});
@@ -23,6 +24,15 @@ const CreateTest = () => {
     API_SINGLETON.post("/tests", data)
       .then((result) => {
         console.log(result.data);
+        setContent({})
+        setQuestions([])
+        toast("Test added!", {
+          hideProgressBar: true,
+          autoClose: 2000,
+          type: "success",
+          theme: "dark",
+          position: "bottom-right",
+        });
       })
       .catch((error) => {
         console.log(error.message);
@@ -31,6 +41,7 @@ const CreateTest = () => {
 
   return (
     <>
+      <ToastContainer />
       <div className="dark w-full h-full flex items-center justify-center">
         <div className="w-full h-full overflow-auto max-w-md p-8 space-y-3 rounded-xl dark-login-input dark:text-gray-100">
           <h1 className="text-2xl font-bold text-center text-gray-100">
@@ -45,6 +56,7 @@ const CreateTest = () => {
                 onChange={(event) =>
                   setContent({ ...content, topic: event.currentTarget.value })
                 }
+                value={content.topic}
                 type="text"
                 name="topic"
                 id="topic"
@@ -63,6 +75,7 @@ const CreateTest = () => {
                     passingMarks: event.currentTarget.value,
                   })
                 }
+                value={content.passingMarks}
                 type="text"
                 name="passingMarks"
                 id="passing"
@@ -81,6 +94,7 @@ const CreateTest = () => {
                     totalMarks: event.currentTarget.value,
                   })
                 }
+                value={content.totalMarks}
                 type="text"
                 name="totalMarks"
                 id="total"
@@ -88,26 +102,7 @@ const CreateTest = () => {
                 className="w-full px-4 py-3 rounded-md dark:border-gray-700 dark-login-input-200 dark:text-gray-100 focus:dark:border-violet-400"
               />
             </div>
-            <div className="space-y-1 text-sm">
-              <label htmlFor="total" className="block dark:text-gray-400 ">
-                Test duration
-              </label>
-              <DatePicker.RangePicker
-                size="large"
-                showTime={{
-                  format: "HH:mm",
-                  use12Hours: true,
-                }}
-                format="YYYY-MM-DD HH:mm"
-                onChange={(value, dateString) => {
-                  setContent({
-                    ...content,
-                    startTime: value[0].toDate().toISOString(),
-                    endTime: value[1].toDate().toISOString(),
-                  });
-                }}
-              />
-            </div>
+
             <div className="text-sm">
               <label
                 htmlFor="question"

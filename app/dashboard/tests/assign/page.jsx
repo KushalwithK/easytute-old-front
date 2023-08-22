@@ -1,17 +1,19 @@
 "use client";
 
-import { Button, Checkbox, Divider, Select } from "antd";
+import { Button, Checkbox, DatePicker, Divider, Select } from "antd";
 import { useEffect, useState } from "react";
 import { API_SINGLETON } from "../../../services/API";
+import { ToastContainer } from "react-toastify";
 const Assign = () => {
   const [iTests, setTests] = useState(null);
   const [selectedTest, setSelectedTest] = useState(null);
   const [selectedBatch, setSelectedBatch] = useState(null);
-  const [alreadyAssigned, setAlreadyAssigned] = useState([]);
+  const [timings, setTimings] = useState(null);
   const [batches, setBatches] = useState(null);
   const [students, setStudents] = useState(null);
 
   const [checkedList, setCheckedList] = useState([]);
+
   const checkAll = students?.length === checkedList.length;
   const indeterminate =
     checkedList.length > 0 && checkedList.length < students?.length;
@@ -51,7 +53,7 @@ const Assign = () => {
   const getTests = () => {
     API_SINGLETON.get("/tests/")
       .then((result) => {
-        const tests = result.data.tests;
+        const tests = result.data.testDetails;
         let changedTests = [];
         changedTests = tests.map((test) => {
           return {
@@ -100,6 +102,7 @@ const Assign = () => {
       console.log(selectedTest);
       API_SINGLETON.post(`/tests/${selectedTest}/attend`, {
         student_ids: checkedList,
+        ...timings
       })
         .then((result) => {
           console.log(result.data);
@@ -107,6 +110,7 @@ const Assign = () => {
         })
         .catch((error) => {
           console.log(error);
+
         });
     }
   };
@@ -157,6 +161,25 @@ const Assign = () => {
             />
           </div>
         )}
+        <div className="space-y-1 text-sm">
+          <label htmlFor="total" className="block dark:text-gray-400 ">
+            Test duration
+          </label>
+          <DatePicker.RangePicker
+            size="large"
+            showTime={{
+              format: "HH:mm",
+              use12Hours: true,
+            }}
+            format="YYYY-MM-DD HH:mm"
+            onChange={(value, dateString) => {
+              setTimings({
+                startTime: value[0].toDate().toISOString(),
+                endTime: value[1].toDate().toISOString(),
+              });
+            }}
+          />
+        </div>
         {students && (
           <div>
             <Checkbox
