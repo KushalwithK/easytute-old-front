@@ -50,7 +50,7 @@ const Sidebar = () => {
     getItem("Courses", "/dashboard/course", <BookOutlined />),
     getItem("Batches", "/dashboard/batch", <FieldTimeOutlined />),
     getItem("Actions"),
-    getItem("Tests", "/dashboard/tests", <BookOutlined />),
+    getItem("Create Tests", "/dashboard/tests/create", <BookOutlined />),
     getItem("Assign Tests", "/dashboard/tests/assign", <UpCircleOutlined />),
     getItem("Profile"),
     getItem("Logout", "USER::LOGOUT", <LogoutOutlined />),

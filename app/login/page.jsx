@@ -38,6 +38,13 @@ const Login = () => {
         Cookies.set("token", result.data.token);
         console.log(Cookies);
         setLoading(false);
+        toast("Logged In as ADMIN", {
+          hideProgressBar: true,
+          autoClose: 2000,
+          type: "success",
+          theme: "dark",
+          position: "bottom-right",
+        });
         router.push("/dashboard");
       })
       .catch((error) => {
@@ -58,9 +65,12 @@ const Login = () => {
       <div className="p-8 text-gray-100 flex flex-row items-center justify-end">
         <p className="text-l font-medium text-center">Student Login</p>
       </div>
-      <div className="flex flex-col items-center justify-center" style={{
-        height: "80%"
-      }}>
+      <div
+        className="flex flex-col items-center justify-center"
+        style={{
+          height: "80%",
+        }}
+      >
         <div className="w-full max-w-md p-8 space-y-3 rounded-xl dark-login-input dark:text-gray-100">
           <h1 className="text-2xl font-bold text-center">Login</h1>
           <form
@@ -73,7 +83,10 @@ const Login = () => {
               </label>
               <input
                 onChange={(e) =>
-                  setCredentials({ ...credentials, email: e.currentTarget.value })
+                  setCredentials({
+                    ...credentials,
+                    email: e.currentTarget.value,
+                  })
                 }
                 type="email"
                 name="email"
@@ -115,7 +128,7 @@ const Login = () => {
           </form>
           <div className="flex justify-center  pt-4 space-x-4">
             <p className="text-xs text-center sm:px-6 dark:text-gray-400">
-              Don't have an account?
+              Dont have an account?
               <Link
                 rel="noopener noreferrer"
                 href="/register"
