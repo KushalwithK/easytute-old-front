@@ -38,17 +38,7 @@ const Assign = () => {
         });
   };
 
-  const getCurrentChecked = () => {
-    API_SINGLETON.get(`/tests/${selectedTest}`).then((result) => {
-      setCheckedList(result.data.test.attendedStudents);
-    });
-    // console.log(currentTest?.map((test) => test._id));
-  };
-
   useEffect(() => getStudentsIds(), [selectedBatch]);
-  useEffect(() => {
-    if (selectedTest) getCurrentChecked();
-  }, [selectedTest]);
 
   const getTests = () => {
     API_SINGLETON.get("/tests/")
@@ -102,7 +92,7 @@ const Assign = () => {
       console.log(selectedTest);
       API_SINGLETON.post(`/tests/${selectedTest}/attend`, {
         student_ids: checkedList,
-        ...timings
+        ...timings,
       })
         .then((result) => {
           console.log(result.data);
@@ -110,7 +100,6 @@ const Assign = () => {
         })
         .catch((error) => {
           console.log(error);
-
         });
     }
   };

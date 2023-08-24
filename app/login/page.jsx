@@ -63,7 +63,12 @@ const Login = () => {
     <main className="dark h-screen">
       <ToastContainer />
       <div className="p-8 text-gray-100 flex flex-row items-center justify-end">
-        <p className="text-l font-medium text-center">Student Login</p>
+        <Link
+          href={"/login/student"}
+          className="text-l font-medium text-center"
+        >
+          Student Login
+        </Link>
       </div>
       <div
         className="flex flex-col items-center justify-center"
@@ -72,7 +77,7 @@ const Login = () => {
         }}
       >
         <div className="w-full max-w-md p-8 space-y-3 rounded-xl dark-login-input dark:text-gray-100">
-          <h1 className="text-2xl font-bold text-center">Login</h1>
+          <h1 className="text-2xl font-bold text-center">Admin Login</h1>
           <form
             className="space-y-6"
             onSubmit={(event) => event.preventDefault()}

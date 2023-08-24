@@ -14,15 +14,13 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <ConfigProvider theme={{ algorithm: theme.darkAlgorithm }}>
-          <main className="h-screen pagesSidebar">
-            <Sidebar />
-            {children}
-          </main>
-        </ConfigProvider>
-      </body>
-    </html>
+    <section>
+      <ConfigProvider theme={{ algorithm: theme.darkAlgorithm }}>
+        <main className="h-screen pagesSidebar">
+          <Sidebar />
+          {children}
+        </main>
+      </ConfigProvider>
+    </section>
   );
 }
