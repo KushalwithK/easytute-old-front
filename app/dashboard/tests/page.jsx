@@ -120,13 +120,8 @@ export default function Home() {
       <ToastContainer />
       <div className="w-full mx-5 md:px-8">
         <ConfigProvider theme={{ algorithm: theme.darkAlgorithm }}>
-          <div className="items-center justify-end md:flex">
-            <Button
-              type="primary"
-              onClick={() => router.push("/dashboard/student/add")}
-            >
-              Add Student
-            </Button>
+          <div className="items-center justify-start md:flex">
+            <p className="text-gray-100">Tests for you</p>
           </div>
           <div className="mt-5 relative h-max overflow-auto">
             <Table columns={columns} dataSource={data} />

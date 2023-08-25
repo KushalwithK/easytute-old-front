@@ -11,6 +11,10 @@ export default async function middleware(req: NextRequest) {
   ];
   let url = req.url;
 
+  if (url == "http://localhost:3000/") {
+    return NextResponse.redirect("http://localhost:3000/dashboard");
+  }
+
   if (token) {
     const res = await fetch("http://localhost:8080/verifyToken", {
       method: "GET",
@@ -18,10 +22,6 @@ export default async function middleware(req: NextRequest) {
     });
     const resJson = await res.json();
     const admin = resJson.user.admin;
-
-    if (url == "http://localhost:3000/") {
-      return NextResponse.redirect("http://localhost:3000/dashboard");
-    }
 
     if (!admin) {
       if (
