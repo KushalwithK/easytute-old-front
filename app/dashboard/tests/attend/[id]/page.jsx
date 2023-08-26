@@ -2,8 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import { API_SINGLETON } from "../../../../services/API";
+import Cookies from 'js-cookie'
 import { useRouter } from "next/navigation";
 import { Button, Checkbox } from "antd";
+import { ToastContainer, toast } from "react-toastify";
 
 const AttendTest = ({ params }) => {
   const [test, setTest] = useState(null);
@@ -38,17 +40,50 @@ const AttendTest = ({ params }) => {
     }
   };
 
-  const handleTestAttended = (e) => {};
+  const handleTestAttended = (e) => {
+    API_SINGLETON.put(`/tests/${params.id}/finish/test`, {
+      studentId: Cookies.get('userId'),
+      ...test
+    }).then((res) => {
+      if (res.status == 200) {
+        toast("Test attended!", {
+          hideProgressBar: true,
+          autoClose: 2000,
+          type: "success",
+          theme: "dark",
+          position: "bottom-right",
+        });
+        router.push("/tests/")
+      }
+    }).catch((error) => {
+      if (error.response.data.message) {
+        toast(error.response.data.message, {
+          hideProgressBar: true,
+          autoClose: 2000,
+          type: "error",
+          theme: "dark",
+          position: "bottom-right",
+        });
+      }
+      else {
+        toast(error.message, {
+          hideProgressBar: true,
+          autoClose: 2000,
+          type: "error",
+          theme: "dark",
+          position: "bottom-right",
+        });
+      }
+    })
+  };
 
   useEffect(() => {
     fetchTest();
   }, []);
 
-  useEffect(() => {
-    console.log(test);
-  }, [test]);
   return (
     <>
+      <ToastContainer />
       <div className="dark h-full w-full flex items-center justify-center">
         <div className="w-full h-full overflow-auto max-w-md p-8 space-y-3 rounded-xl dark-login-input dark:text-gray-100">
           <h1 className="text-center">

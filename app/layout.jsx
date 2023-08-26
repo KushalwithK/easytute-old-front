@@ -1,6 +1,7 @@
 "use client";
 
 import "./globals.scss";
+import "react-toastify/dist/ReactToastify.css";
 import { Inter } from "next/font/google";
 
 const inter = Inter({ subsets: ["latin"] });

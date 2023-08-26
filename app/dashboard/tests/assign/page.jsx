@@ -3,7 +3,7 @@
 import { Button, Checkbox, DatePicker, Divider, Select } from "antd";
 import { useEffect, useState } from "react";
 import { API_SINGLETON } from "../../../services/API";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 const Assign = () => {
   const [iTests, setTests] = useState(null);
   const [selectedTest, setSelectedTest] = useState(null);
@@ -88,7 +88,7 @@ const Assign = () => {
   };
 
   const assignTest = () => {
-    if (checkedList != []) {
+    if (checkedList != [] && timings) {
       console.log(selectedTest);
       API_SINGLETON.post(`/tests/${selectedTest}/attend`, {
         student_ids: checkedList,
@@ -96,7 +96,13 @@ const Assign = () => {
       })
         .then((result) => {
           console.log(result.data);
-          setCheckedList([]);
+          toast("Test Assigned!", {
+            hideProgressBar: true,
+            autoClose: 2000,
+            type: "success",
+            theme: "dark",
+            position: "bottom-right",
+          });
         })
         .catch((error) => {
           console.log(error);
@@ -106,6 +112,7 @@ const Assign = () => {
 
   return (
     <>
+      <ToastContainer />
       <div className="dark w-full p-10 flex flex-col gap-4">
         <h1 className="text-gray-100">Assign Tests to Students</h1>
         {iTests && (
