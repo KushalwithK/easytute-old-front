@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { API_SINGLETON } from "../../../../services/API";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 import { Button, Checkbox } from "antd";
 
 const AttendTest = ({ params }) => {
@@ -38,7 +39,14 @@ const AttendTest = ({ params }) => {
     }
   };
 
-  const handleTestAttended = (e) => {};
+  const handleTestAttended = (e) => {
+    API_SINGLETON.put(`/tests/${params.id}/finish/test`, {
+      studentId: Cookies.get("userId"),
+      ...test,
+    }).then((result) => {
+      console.log(result.data);
+    });
+  };
 
   useEffect(() => {
     fetchTest();

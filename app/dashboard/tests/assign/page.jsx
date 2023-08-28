@@ -3,7 +3,7 @@
 import { Button, Checkbox, DatePicker, Divider, Select } from "antd";
 import { useEffect, useState } from "react";
 import { API_SINGLETON } from "../../../services/API";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 const Assign = () => {
   const [iTests, setTests] = useState(null);
   const [selectedTest, setSelectedTest] = useState(null);
@@ -88,7 +88,7 @@ const Assign = () => {
   };
 
   const assignTest = () => {
-    if (checkedList != []) {
+    if (checkedList.length > 0 && timings) {
       console.log(selectedTest);
       API_SINGLETON.post(`/tests/${selectedTest}/attend`, {
         student_ids: checkedList,
@@ -96,16 +96,41 @@ const Assign = () => {
       })
         .then((result) => {
           console.log(result.data);
-          setCheckedList([]);
+          toast("Test assigned!", {
+            hideProgressBar: true,
+            autoClose: 2000,
+            type: "success",
+            theme: "dark",
+            position: "bottom-right",
+          });
+          // setCheckedList([]);
         })
         .catch((error) => {
           console.log(error);
+        });
+    } else {
+      if (!timings)
+        toast("Test duration must not be null!", {
+          hideProgressBar: true,
+          autoClose: 2000,
+          type: "error",
+          theme: "dark",
+          position: "bottom-right",
+        });
+      if (checkedList.length <= 0)
+        toast("Minimum 1 student if required!", {
+          hideProgressBar: true,
+          autoClose: 2000,
+          type: "error",
+          theme: "dark",
+          position: "bottom-right",
         });
     }
   };
 
   return (
     <>
+      <ToastContainer />
       <div className="dark w-full p-10 flex flex-col gap-4">
         <h1 className="text-gray-100">Assign Tests to Students</h1>
         {iTests && (

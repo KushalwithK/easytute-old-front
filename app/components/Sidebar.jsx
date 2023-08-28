@@ -9,6 +9,7 @@ import {
   UpCircleOutlined,
   PaperClipOutlined,
   LogoutOutlined,
+  LockOutlined,
 } from "@ant-design/icons";
 import { LuNewspaper } from "react-icons/lu";
 import { usePathname, useRouter } from "next/navigation";
@@ -85,6 +86,12 @@ const Sidebar = () => {
               "Assign Tests",
               "/dashboard/tests/assign",
               <UpCircleOutlined />
+            ),
+          isAdmin &&
+            getItem(
+              "Assign Password to Student",
+              "/dashboard/student/assign/password",
+              <LockOutlined />
             ),
           !isAdmin &&
             getItem("My Tests", "/dashboard/tests", <PaperClipOutlined />),
