@@ -35,8 +35,8 @@ const Login = () => {
       password: credentials.password,
     })
       .then((result) => {
+        Cookies.set("userId", result.data.authenticatedUser._id);
         Cookies.set("token", result.data.token);
-        console.log(Cookies);
         setLoading(false);
         toast("Logged In as ADMIN", {
           hideProgressBar: true,

@@ -32,10 +32,8 @@ const Login = () => {
     setLoading(true);
     API_SINGLETON.post("/students/login", credentials)
       .then((result) => {
-        console.log(result.data);
-        Cookies.set("token", result.data.token);
         Cookies.set("userId", result.data.authenticatedUser._id);
-        console.log(Cookies);
+        Cookies.set("token", result.data.token);
         setLoading(false);
         toast("Logged In as STUDENT", {
           hideProgressBar: true,
