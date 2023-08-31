@@ -20,7 +20,7 @@ export default async function middleware(req: NextRequest) {
   }
 
   if (token) {
-    const res = await fetch("http://localhost:8080/verifyToken", {
+    const res = await fetch("https://attendance-manager-silk.vercel.app/verifyToken", {
       method: "GET",
       headers: { Authorization: `Bearer ${token.value}` },
     });
