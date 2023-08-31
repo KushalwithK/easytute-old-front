@@ -1,18 +1,22 @@
 import { NextResponse, NextRequest } from "next/server";
 
 export default async function middleware(req: NextRequest) {
+
+  const baseURL = process.env.baseUrl
+
   let token = req.cookies.get("token");
 
+
   const accessableUrls: Array<string> = [
-    "http://localhost:3000/dashboard",
-    "http://localhost:3000/dashboard/tests",
-    "http://localhost:3000/dashboard/tests/results",
-    "http://localhost:3000/dashboard/profile",
+    baseURL + "dashboard",
+    baseURL + "dashboard/tests",
+    baseURL + "dashboard/tests/results",
+    baseURL + "dashboard/profile",
   ];
   let url = req.url;
 
-  if (url == "http://localhost:3000/") {
-    return NextResponse.redirect("http://localhost:3000/dashboard");
+  if (url == baseURL) {
+    return NextResponse.redirect(baseURL + "dashboard");
   }
 
   if (token) {
@@ -21,7 +25,12 @@ export default async function middleware(req: NextRequest) {
       headers: { Authorization: `Bearer ${token.value}` },
     });
     const resJson = await res.json();
-    const admin = resJson.user.admin;
+    if (res.status == 401) {
+      req.cookies.clear()
+      return NextResponse.redirect(baseURL + 'login')
+    }
+
+    const admin = resJson.user.admin
 
     if (!admin) {
       if (
@@ -30,12 +39,12 @@ export default async function middleware(req: NextRequest) {
         !accessableUrls.includes(url) &&
         !url.includes("/tests/attend/")
       ) {
-        return NextResponse.redirect("http://localhost:3000/dashboard");
+        return NextResponse.redirect(baseURL + "dashboard");
       }
     }
   }
   if (!token && url.includes("/dashboard")) {
     console.log("not logged in!");
-    return NextResponse.redirect("http://localhost:3000/login");
+    return NextResponse.redirect(baseURL + "login");
   }
 }

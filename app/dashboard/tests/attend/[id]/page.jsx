@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { API_SINGLETON } from "../../../../services/API";
-import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { Button, Checkbox } from "antd";
@@ -41,7 +40,29 @@ const AttendTest = ({ params }) => {
     }
   };
 
-  const handleTestAttended = (e) => {};
+  const handleTestAttended = () => {
+    API_SINGLETON.put(`/tests/${params.id}/finish/test`, {
+      studentId: Cookies.get('userId'),
+      ...test
+    }).then((_) => {
+      toast("Test Completed!", {
+        hideProgressBar: true,
+        autoClose: 2000,
+        type: "success",
+        theme: "dark",
+        position: "bottom-right",
+      });
+      router.push('/dashboard/tests/results')
+    }).catch((error) => {
+      toast(error.message, {
+        hideProgressBar: true,
+        autoClose: 2000,
+        type: "error",
+        theme: "dark",
+        position: "bottom-right",
+      });
+    })
+  };
 
   useEffect(() => {
     fetchTest();

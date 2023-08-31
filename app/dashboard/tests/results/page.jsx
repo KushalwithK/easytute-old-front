@@ -92,21 +92,6 @@ export default function Home() {
         <p>{new Date(record?.test.endTime).toLocaleString()}</p>
       ),
     },
-    // {
-    //   title: "Action",
-    //   key: "action",
-    //   render: (_, record) => (
-    //     <Space size="middle">
-    //       <Button
-    //         onClick={() =>
-    //           router.push(`/dashboard/tests/attend/${record?._id}`)
-    //         }
-    //       >
-    //         Attend Test
-    //       </Button>
-    //     </Space>
-    //   ),
-    // },
   ];
 
   return (
