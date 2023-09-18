@@ -37,8 +37,11 @@ const UpdateBatch = ({ params }) => {
 
   const getStudents = () => {
     API_SINGLETON.get("/students/").then((result) => {
+
+      const filteredStudents = result.data.students.filter((student) => student.enrolled)
+
       let changedStudents = [];
-      changedStudents = result.data.students.map((student) => {
+      changedStudents = filteredStudents.map((student) => {
         return {
           label: student.name,
           value: student._id,

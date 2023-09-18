@@ -2,7 +2,8 @@ import { NextResponse, NextRequest } from "next/server";
 
 export default async function middleware(req: NextRequest) {
 
-  const baseURL = process.env.baseUrl
+  const baseURL = req.nextUrl.origin + "/"
+
 
   let token = req.cookies.get("token");
 
