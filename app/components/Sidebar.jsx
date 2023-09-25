@@ -43,7 +43,7 @@ const Sidebar = () => {
   const verifyToken = async () => {
     const token = Cookies.get("token");
     const res = await fetch(
-      "https://attendance-manager-silk.vercel.app/verifyToken",
+      "http://localhost:8080/verifyToken",
       {
         method: "GET",
         headers: { Authorization: `BEARER ${token}` },
@@ -65,6 +65,7 @@ const Sidebar = () => {
     }
     if (e.key === "USER::LOGOUT") {
       Cookies.remove("token");
+      Cookies.remove("userId");
       router.push("/login");
     }
   };
@@ -72,49 +73,49 @@ const Sidebar = () => {
     isAdmin == null
       ? []
       : [
-          getItem("Accessibles"),
-          getItem("Dashboard", "/dashboard", <HomeOutlined />),
-          isAdmin &&
-            getItem("Students", "/dashboard/student", <UserOutlined />),
-          isAdmin && getItem("Courses", "/dashboard/course", <BookOutlined />),
-          isAdmin &&
-            getItem("Batches", "/dashboard/batch", <FieldTimeOutlined />),
-          isAdmin &&
-            getItem(
-              "Batch Timings",
-              "/dashboard/batch/timings",
-              <FieldTimeOutlined />
-            ),
-          getItem("Actions"),
-          isAdmin &&
-            getItem(
-              "Create Tests",
-              "/dashboard/tests/create",
-              <BookOutlined />
-            ),
-          isAdmin &&
-            getItem(
-              "Assign Tests",
-              "/dashboard/tests/assign",
-              <UpCircleOutlined />
-            ),
-          isAdmin &&
-            getItem(
-              "Assign Password to Student",
-              "/dashboard/student/assign/password",
-              <LockOutlined />
-            ),
-          !isAdmin &&
-            getItem("My Tests", "/dashboard/tests", <PaperClipOutlined />),
-          !isAdmin &&
-            getItem(
-              "Test Results",
-              "/dashboard/tests/results",
-              <LuNewspaper />
-            ),
-          getItem("Profile"),
-          getItem("Logout", "USER::LOGOUT", <LogoutOutlined />),
-        ];
+        getItem("Accessibles"),
+        getItem("Dashboard", "/dashboard", <HomeOutlined />),
+        isAdmin &&
+        getItem("Students", "/dashboard/student", <UserOutlined />),
+        isAdmin && getItem("Courses", "/dashboard/course", <BookOutlined />),
+        isAdmin &&
+        getItem("Batches", "/dashboard/batch", <FieldTimeOutlined />),
+        isAdmin &&
+        getItem(
+          "Batch Timings",
+          "/dashboard/batch/timings",
+          <FieldTimeOutlined />
+        ),
+        getItem("Actions"),
+        isAdmin &&
+        getItem(
+          "Create Tests",
+          "/dashboard/tests/create",
+          <BookOutlined />
+        ),
+        isAdmin &&
+        getItem(
+          "Assign Tests",
+          "/dashboard/tests/assign",
+          <UpCircleOutlined />
+        ),
+        isAdmin &&
+        getItem(
+          "Assign Password to Student",
+          "/dashboard/student/assign/password",
+          <LockOutlined />
+        ),
+        !isAdmin &&
+        getItem("My Tests", "/dashboard/tests", <PaperClipOutlined />),
+        !isAdmin &&
+        getItem(
+          "Test Results",
+          "/dashboard/tests/results",
+          <LuNewspaper />
+        ),
+        getItem("Profile"),
+        getItem("Logout", "USER::LOGOUT", <LogoutOutlined />),
+      ];
   return (
     <Menu
       onClick={onClick}

@@ -1,4 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
+import Cookies from "js-cookie";
 
 export default async function middleware(req: NextRequest) {
 
@@ -16,16 +17,18 @@ export default async function middleware(req: NextRequest) {
 
   if (url == baseURL) {
     const nextUrl = req.nextUrl.clone();
+    console.log("Sending to dashboard");
 
     nextUrl.pathname = "/dashboard";
     return NextResponse.redirect(nextUrl);
   }
 
   if (token) {
-    if (url.includes("/login"))
+    if (url.endsWith("/login")) {
       return NextResponse.redirect(baseURL + "dashboard");
+    }
     const res = await fetch(
-      "https://attendance-manager-silk.vercel.app/verifyToken",
+      "http://localhost:8080/verifyToken",
       {
         method: "GET",
         headers: { Authorization: `Bearer ${token.value}` },
@@ -33,7 +36,8 @@ export default async function middleware(req: NextRequest) {
     );
     const resJson = await res.json();
     if (res.status == 401) {
-      req.cookies.clear();
+      Cookies.remove("token");
+      Cookies.remove("userId");
       return NextResponse.redirect(baseURL + "login");
     }
 
@@ -46,12 +50,14 @@ export default async function middleware(req: NextRequest) {
         !accessableUrls.includes(url) &&
         !url.includes("/tests/attend/")
       ) {
+        console.log("Sending to dashboard");
         return NextResponse.redirect(baseURL + "dashboard");
       }
     }
-  }
-  if (!token && url.includes("/dashboard")) {
-    console.log("not logged in!");
-    return NextResponse.redirect(baseURL + "login");
+  } else {
+    if (url.includes("/dashboard")) {
+      console.log("Sending to dashboard");
+      return NextResponse.redirect(baseURL + "login");
+    }
   }
 }
