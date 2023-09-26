@@ -2,21 +2,21 @@
 
 import { Button, Checkbox, ConfigProvider, DatePicker, Input, Select, theme } from "antd";
 import { useEffect, useState } from "react";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import { API_SINGLETON } from "../../../services/API";
 import { randomBytes } from "crypto";
 
 const Attendance = () => {
 
     const [students, setStudents] = useState([]);
-    const [selectedStudents, setSelectedStudents] = useState([])
     const [batches, setBatches] = useState([]);
     const [selectedBatch, setSelectedBatch] = useState(null)
     const [courses, setCourses] = useState([]);
     const [attendedStudents, setAttendedStudents] = useState(null);
     const [info, setInfo] = useState({
         date: null,
-        courseId: null
+        courseId: null,
+        dayReport: null
     });
 
     const getCourses = () => {
@@ -83,6 +83,12 @@ const Attendance = () => {
             } else {
                 setAttendedStudents(null)
             }
+            setInfo((oldInfo) => {
+                return {
+                    ...oldInfo,
+                    date: shortDate
+                }
+            })
         }).catch((error) => {
             console.log(error);
         })
@@ -93,13 +99,38 @@ const Attendance = () => {
     };
 
     const onCourseChange = (value) => {
-        console.log(`selected ${value}`);
+        setInfo((oldInfo) => {
+            return {
+                ...oldInfo,
+                courseId: value
+            }
+        })
     };
 
     const onStudentSelectionChange = (values) => {
-
+        console.log(values);
+        setAttendedStudents(values)
     }
 
+    const handleAttendanceSubmission = () => {
+        API_SINGLETON.post(`/attendance/attend/${info.date}`, {
+            ...info,
+            batchId: selectedBatch,
+            studentIds: attendedStudents,
+        }).then((result) => {
+            toast.success("Attendance Added!", {
+                autoClose: 2000,
+                theme: "dark",
+                position: "bottom-right",
+            });
+        }).catch((error) => {
+            toast.error(error?.message ?? "Something went wrong!", {
+                autoClose: 2000,
+                theme: "dark",
+                position: "bottom-right",
+            });
+        })
+    }
 
     const filterOption = (input, option) =>
         (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
@@ -127,9 +158,19 @@ const Attendance = () => {
                             filterOption={filterOption}
                             options={courses}
                         />
+                        <Input placeholder="Enter the day report..." disabled={!selectedBatch} value={info.dayReport} onChange={(e) => setInfo((oldInfo) => {
+                            return {
+                                ...oldInfo,
+                                dayReport: e.target.value
+                            }
+                        })} style={{ width: 300 }} className="rounded-md dark:border-gray-700 dark-login-input-200 dark:text-gray-100 focus:dark:border-violet-400" />
+
                     </div>
                     <div className="flex flex-col">
-                        <Checkbox.Group className="flex flex-col gap-2" options={students} value={attendedStudents} onChange={onStudentSelectionChange} />
+                        <Checkbox.Group disabled={!info.date} className="flex flex-col gap-2" options={students} value={attendedStudents} onChange={onStudentSelectionChange} />
+                    </div>
+                    <div className="flex">
+                        <Button disabled={!info.date || !info.courseId || !info.dayReport || !attendedStudents.length > 0} onClick={handleAttendanceSubmission}>Submit Attendance</Button>
                     </div>
                 </div>
             </ConfigProvider>
