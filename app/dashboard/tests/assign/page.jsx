@@ -1,6 +1,14 @@
 "use client";
 
-import { Button, Checkbox, DatePicker, Divider, Select } from "antd";
+import {
+  Button,
+  Checkbox,
+  ConfigProvider,
+  DatePicker,
+  Divider,
+  Select,
+  theme,
+} from "antd";
 import { useEffect, useState } from "react";
 import { API_SINGLETON } from "../../../services/API";
 import { ToastContainer, toast } from "react-toastify";
@@ -131,102 +139,104 @@ const Assign = () => {
   return (
     <>
       <ToastContainer />
-      <div className="dark w-full p-10 flex flex-col gap-4">
-        <h1 className="text-gray-100">Assign Tests to Students</h1>
-        {iTests && (
+      <ConfigProvider theme={{ algorithm: theme.darkAlgorithm }}>
+        <div className="dark w-full p-10 flex flex-col gap-4">
+          <h1 className="text-gray-100">Assign Tests to Students</h1>
+          {iTests && (
+            <div className="space-y-1 text-sm">
+              <label htmlFor="password" className="block dark:text-gray-400">
+                Tests
+              </label>
+              <Select
+                placeholder="Select test"
+                allowClear
+                onClear={() => {
+                  setSelectedTest(null);
+                  setSelectedBatch(null);
+                  setStudents(null);
+                }}
+                size="large"
+                style={{ width: 500 }}
+                onChange={(value) => setSelectedTest(value)}
+                options={iTests}
+              />
+            </div>
+          )}
+          {batches && (
+            <div className="dark space-y-1 text-sm">
+              <label htmlFor="password" className="block dark:text-gray-400">
+                Batches
+              </label>
+              <Select
+                value={selectedBatch}
+                disabled={selectedTest ? false : true}
+                size="large"
+                allowClear
+                showSearch={false}
+                style={{ width: 500 }}
+                placeholder="Select batch"
+                onChange={(value) => setSelectedBatch(value)}
+                onClear={() => {
+                  setSelectedBatch(null);
+                  setStudents(null);
+                }}
+                options={batches}
+              />
+            </div>
+          )}
           <div className="space-y-1 text-sm">
-            <label htmlFor="password" className="block dark:text-gray-400">
-              Tests
+            <label htmlFor="total" className="block dark:text-gray-400 ">
+              Test duration
             </label>
-            <Select
-              placeholder="Select test"
-              allowClear
-              onClear={() => {
-                setSelectedTest(null);
-                setSelectedBatch(null);
-                setStudents(null);
-              }}
+            <DatePicker.RangePicker
               size="large"
-              style={{ width: 500 }}
-              onChange={(value) => setSelectedTest(value)}
-              options={iTests}
+              showTime={{
+                format: "HH:mm",
+                use12Hours: true,
+              }}
+              format="YYYY-MM-DD HH:mm"
+              onChange={(value, dateString) => {
+                setTimings({
+                  startTime: value[0].toDate().toISOString(),
+                  endTime: value[1].toDate().toISOString(),
+                });
+              }}
             />
           </div>
-        )}
-        {batches && (
-          <div className="dark space-y-1 text-sm">
-            <label htmlFor="password" className="block dark:text-gray-400">
-              Batches
-            </label>
-            <Select
-              value={selectedBatch}
-              disabled={selectedTest ? false : true}
-              size="large"
-              allowClear
-              showSearch={false}
-              style={{ width: 500 }}
-              placeholder="Select batch"
-              onChange={(value) => setSelectedBatch(value)}
-              onClear={() => {
-                setSelectedBatch(null);
-                setStudents(null);
-              }}
-              options={batches}
-            />
-          </div>
-        )}
-        <div className="space-y-1 text-sm">
-          <label htmlFor="total" className="block dark:text-gray-400 ">
-            Test duration
-          </label>
-          <DatePicker.RangePicker
-            size="large"
-            showTime={{
-              format: "HH:mm",
-              use12Hours: true,
-            }}
-            format="YYYY-MM-DD HH:mm"
-            onChange={(value, dateString) => {
-              setTimings({
-                startTime: value[0].toDate().toISOString(),
-                endTime: value[1].toDate().toISOString(),
-              });
-            }}
-          />
+          {students && (
+            <div>
+              <Checkbox
+                indeterminate={indeterminate}
+                onChange={onCheckAllChange}
+                checked={checkAll}
+              >
+                Check all
+              </Checkbox>
+              <Divider
+                style={{
+                  margin: "12px 0",
+                }}
+              />
+              <Checkbox.Group
+                options={students}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: ".5rem",
+                }}
+                value={checkedList}
+                onChange={onChange}
+              />
+              <Divider
+                style={{
+                  margin: "12px 0",
+                }}
+              />
+              <Button onClick={assignTest}>Assign Test</Button>
+            </div>
+          )}
         </div>
-        {students && (
-          <div>
-            <Checkbox
-              indeterminate={indeterminate}
-              onChange={onCheckAllChange}
-              checked={checkAll}
-            >
-              Check all
-            </Checkbox>
-            <Divider
-              style={{
-                margin: "12px 0",
-              }}
-            />
-            <Checkbox.Group
-              options={students}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: ".5rem",
-              }}
-              value={checkedList}
-              onChange={onChange}
-            />
-            <Divider
-              style={{
-                margin: "12px 0",
-              }}
-            />
-            <Button onClick={assignTest}>Assign Test</Button>
-          </div>
-        )}
-      </div>
+      </ConfigProvider>
     </>
   );
 };

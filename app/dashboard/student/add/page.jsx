@@ -35,12 +35,11 @@ const AddStudent = () => {
   const Add = (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
-    formData.append("course_ids", student.course_ids);
     formData.append("stream", student.stream);
     formData.append("dob", student.dob);
     formData.append("enrolled", student.enrolled);
 
-    API_SINGLETON.post(`/students/`, formData)
+    API_SINGLETON.post(`/students/`, {})
       .then((result) => {
         console.log(result);
         toast("Student Added!", {
@@ -142,7 +141,9 @@ const AddStudent = () => {
                 style={{ width: "100%" }}
                 placeholder="Please select"
                 autoFocus
-                onChange={(e) => setStudent({ ...student, course_ids: e })}
+                onChange={(e) => {
+                  setStudent({ ...student, course_ids: e });
+                }}
                 options={courses}
               />
             </div>

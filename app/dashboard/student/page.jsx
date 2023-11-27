@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { API_SINGLETON } from "../../services/API";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -16,11 +16,39 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 export default function Home() {
   const [data, setData] = useState([]);
 
   const router = useRouter();
+  const pdfRef = useRef(null);
+
+  const downloadPdf = () => {
+    const input = pdfRef.current;
+    html2canvas(input).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4", true);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+      const imgX = (pdfWidth - imgWidth * ratio) / 2;
+      const imgY = 30;
+
+      pdf.addImage(
+        imgData,
+        "PNG",
+        imgX,
+        imgY,
+        imgWidth * ratio,
+        imgHeight * ratio
+      );
+      pdf.save("test.pdf");
+    });
+  };
 
   const columns = [
     {
@@ -116,9 +144,12 @@ export default function Home() {
   return (
     <main className="w-full my-5 flex">
       <ToastContainer />
-      <div className="w-full mx-5 md:px-8">
+      <div className="w-full mx-5 md:px-8" ref={pdfRef}>
         <ConfigProvider theme={{ algorithm: theme.darkAlgorithm }}>
           <div className="items-center justify-end md:flex">
+            <Button type="primary" onClick={downloadPdf}>
+              Download PDF
+            </Button>
             <Button
               type="primary"
               onClick={() => router.push("/dashboard/student/add")}

@@ -13,12 +13,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <section>
-      <ConfigProvider theme={{ algorithm: theme.darkAlgorithm }}>
-        <main className="h-screen pagesSidebar">
-          <Sidebar />
-          {children}
-        </main>
-      </ConfigProvider>
+      <main className="h-screen pagesSidebar">
+        <Sidebar />
+        {children}
+      </main>
     </section>
   );
 }
